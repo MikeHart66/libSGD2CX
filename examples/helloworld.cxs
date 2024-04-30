@@ -1,0 +1,21 @@
+Strict
+Import libSGD
+
+Function Main:Int()
+
+	sgd_Init()
+    sgd_CreateWindow(640, 480, "Hello from Cerberus X", 0)
+    sgd_CreateScene()
+    sgd_SetSceneClearColor(.5,.2,0,1)
+    
+    While((sgd_PollEvents() & SGD_EVENT_MASK_CLOSE_CLICKED)=0)
+        sgd_RenderScene()
+        sgd_Present()
+        sgd_Clear2D()
+        sgd_Draw2DText(sgd_FPS(),10,10)
+    Wend
+
+	sgd_Terminate()
+
+	Return 0
+End

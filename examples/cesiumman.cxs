@@ -1,0 +1,59 @@
+Strict
+Import libSGD
+
+Function LoadScene:Int()
+    Local env := sgd_LoadTexture("sgd://envmaps/sunnysky-cube.png", SGD_TEXTURE_FORMAT_SRGBA8, 56)
+    sgd_SetSceneEnvTexture(env)
+    Local skybox := sgd_CreateSkybox()
+    sgd_SetSkyboxTexture(skybox, env)
+    sgd_SetSkyboxRoughness(skybox, 0.3)
+
+    Local light := sgd_CreateDirectionalLight()
+    sgd_TurnEntity (light,-30,0,0)	' Tilt light down 30 degrees 
+
+    Local camera := sgd_CreatePerspectiveCamera()
+    sgd_MoveEntity (camera,0,1,-5)
+	
+    Local material := sgd_LoadPBRMaterial("sgd://materials/PavingStones065_1K-JPG")
+    Local mesh := sgd_CreateBoxMesh(-10, -1, -10, 10, 0, 10, material)
+    sgd_TransformMeshTexCoords (mesh, 4,4,0,0)
+    Local ground := sgd_CreateModel()
+    
+    sgd_SetModelMesh (ground, mesh)
+    Local model2 := sgd_LoadBonedModel("sgd://models/cesiumman.glb", True)
+    Return model2
+End
+
+Function Main:Int()
+    sgd_Init()
+    Local atime := 0.0
+
+    sgd_CreateWindow(1280, 720, "Cesium Man", 0)
+    sgd_CreateScene()
+
+    Local model := LoadScene()
+
+
+ 	While((sgd_PollEvents() & SGD_EVENT_MASK_CLOSE_CLICKED)=0)
+        
+        If sgd_KeyDown(263)
+            sgd_TurnEntity (model,0,3,0)
+        Elseif sgd_KeyDown(262)
+            sgd_TurnEntity (model,0,-3,0)
+        Endif
+        If sgd_KeyDown(264)
+            sgd_MoveEntity (model,0,0,0.03)
+        Elseif sgd_KeyDown(265)
+            sgd_MoveEntity (model,0,0,-0.03)
+		Endif
+        atime = atime + .03
+        sgd_AnimateModel (model,0,atime,2)
+
+        sgd_RenderScene()
+        sgd_Present()
+        sgd_Clear2D()
+        sgd_Draw2DText("FPS: " + sgd_FPS(), 10,10)
+	Wend
+    sgd_Terminate()
+    Return 0
+End
