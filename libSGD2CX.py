@@ -2,7 +2,7 @@
 #  Script:       libSGD2CX.py
 #  Description:  Create a Cerberus X module for libSGD
 #  Author:       Michael Hartlef
-#  Version:      1.0
+#  Version:      1.01
 #  License:      MIT
 #  Copyright:    (c) 2024 Michael Hartlef
 # *****************************************************
@@ -26,7 +26,7 @@ def ChangeType(typename):
         ret = "Float"
 
     elif typename=="SGD_Bool":
-        ret = "Bool"
+        ret = "Int"
     elif typename=="SGD_Real":
         ret = "Float"
     elif typename=="SGD_String":
@@ -60,6 +60,7 @@ def ChangeType(typename):
         ret = ""
     return ret
 
+# Change type from CerberusX to C++
 def ChangeType2(typename):
     ret = ""
     if typename=="void":
@@ -74,7 +75,7 @@ def ChangeType2(typename):
         ret = "float"
 
     elif typename=="SGD_Bool":
-        ret = "bool"
+        ret = "int"
     elif typename=="SGD_Real":
         ret = "double"
     elif typename=="SGD_String":
