@@ -2,7 +2,7 @@
 #  Script:       libSGD2CX.py
 #  Description:  Create a Cerberus X module for libSGD
 #  Author:       Michael Hartlef
-#  Version:      1.01
+#  Version:      1.02
 #  License:      MIT
 #  Copyright:    (c) 2024 Michael Hartlef
 # *****************************************************
@@ -56,6 +56,10 @@ def ChangeType(typename):
         ret = "Int"
     elif typename=="SGD_Font":
         ret = "Int"
+    elif typename=="SGD_Image":
+        ret = "Int"
+    elif typename=="SGD_Collider":
+        ret = "Int"
     else:
         ret = ""
     return ret
@@ -104,6 +108,10 @@ def ChangeType2(typename):
     elif typename=="SGD_Camera":
         ret = "int"
     elif typename=="SGD_Font":
+        ret = "int"
+    elif typename=="SGD_Image":
+        ret = "int"
+    elif typename=="SGD_Collider":
         ret = "int"
     else:
         ret = ""
