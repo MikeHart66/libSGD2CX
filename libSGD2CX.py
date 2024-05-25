@@ -2,7 +2,7 @@
 #  Script:       libSGD2CX.py
 #  Description:  Create a Cerberus X module for libSGD
 #  Author:       Michael Hartlef
-#  Version:      1.02
+#  Version:      1.03
 #  License:      MIT
 #  Copyright:    (c) 2024 Michael Hartlef
 # *****************************************************
@@ -31,7 +31,6 @@ def ChangeType(typename):
         ret = "Float"
     elif typename=="SGD_String":
         ret = "String"
-
     elif typename=="SGD_Sound":
         ret = "Int"
     elif typename=="SGD_Surface":
@@ -92,7 +91,7 @@ def ChangeType2(typename):
     elif typename=="SGD_Texture":
         ret = "int"
     elif typename=="SGD_Light":
-        ret = "Int"
+        ret = "int"
     elif typename=="SGD_Entity":
         ret = "int"
     elif typename=="SGD_Material":
@@ -269,6 +268,11 @@ if __name__ == '__main__':
     newconst = ""
     doclines = ""
     doclines2 = ""
+    namespace = "libsgd"
+    docmodules = {}
+    namespaces = {}
+    namespacesc = {}
+    namespacescc = {}
 
     lfound = 0
     file = open(cerberuspath+"/native/sgd.h", "r", encoding="utf8")
@@ -296,10 +300,20 @@ if __name__ == '__main__':
             line = line.replace("#endif", "' endif")
         if line.startswith("#define SGD_SGD_H_INCLUDED"):
             line = line.replace("#define SGD_SGD_H_INCLUDED", "' define SGD_SGD_H_INCLUDED")
-    
-        if line.startswith("//"):
+
+        if line.startswith("//! @name ") and line.find('Typedefs')<=0 and line.find('ImGui')<=0:
+            lp = line.find('@name')
+            namespace = line[lp+6:].replace('\n', '').replace('\r', '')
+            namespace = namespace.replace(' ','_').lower()
+            namespace = namespace.replace('2d_overlay','overlay2D').lower()
+            line = 'Module libSGD.'+namespace+'\n\n'
+            namespaces.update({namespace:"# Module."+namespace})
+            namespacesc.update({namespace:"\n"})
+            namespacescc.update({namespace:"' "+namespace+'.cxs\n'})
+             
+        elif line.startswith("//"):
             line = line.replace("//", "' ")
-        if line.startswith("/*"):
+        elif line.startswith("/*"):
             line = line.replace("/*", "' ")
 
         if line.find("sgd_SetErrorHandler")>1:
@@ -369,22 +383,75 @@ if __name__ == '__main__':
 
         
         if not (line .startswith("'") or len(line)<5):
+            tmpdoc = ""
+            tmpsrc = ""
             if line.startswith("Function"):
                 if line.find(' = "_sgd_')>3:
                     speciallines = speciallines + '\t' + line
                     lp = line.find(' = "_sgd_')
                     doclines = doclines + "# " + line[0:lp]+"\n\n"
                     doclines = doclines + doclines2+"\n"
+                    if namespace in namespacesc:
+                        tmpsrc = namespacesc.get(namespace)
+                        tmpsrc = tmpsrc + '\t' + line[0:lp] +"\n"
+                    else:
+                        tmpsrc = '\t' + line +"\n"
+                    namespacesc.update({namespace:tmpsrc}) 
+                    
+                    if namespace in namespaces:
+                        tmpdoc = namespaces.get(namespace)
+                        tmpdoc = tmpdoc + "# " + line[0:lp] +"\n\n"+ doclines2
+                    else:
+                        tmpdoc = "# " + line +"\n"
+                    namespaces.update({namespace:tmpdoc}) 
+                    
                     doclines2 = ""
+                    #print (namespace+"->"+line[0:lp])
                 else:       
                     newcontent = newcontent + '\t' + line
                     doclines = doclines + "# " + line +"\n"
                     doclines = doclines + doclines2+"\n"
+
+                    if namespace in namespaces:
+                        tmpsrc = namespacesc.get(namespace)
+                        tmpsrc = tmpsrc + '\t' + line #+"\n"
+                    else:
+                        tmpsrc = '\t' + line #+"\n"
+                    namespacesc.update({namespace:tmpsrc}) 
+
+                    if namespace in namespaces:
+                        tmpdoc = namespaces.get(namespace)
+                        tmpdoc = tmpdoc + "# " + line +"\n"+ doclines2
+                    else:
+                        tmpdoc = "# " + line +"\n"
+                    namespaces.update({namespace:tmpdoc}) 
                     doclines2 = ""
+
+            elif line.startswith("Module"):
+                doclines = doclines + "# " + line +"\n"
+                docline2 = ""
+                namespaces.update({namespace:'\n# Module libSGD.'+namespace+'\n\n'}) 
+                #namespacesc.update({namespace:"' "+'Module libSGD.'+namespace+'\n\n'}) 
+                         
             else:
                 newconst = newconst + line
                 doclines = doclines + "# " + line +"\n"
-                docline2 = ""          
+                docline2 = ""
+
+                if namespace in namespacescc:
+                    tmpsrc = namespacescc.get(namespace)
+                    tmpsrc = tmpsrc + line #+"\n"
+                else:
+                    tmpsrc = line #+"\n"          
+                namespacescc.update({namespace:tmpsrc})          
+
+
+                if namespace in namespaces:
+                    tmpdoc = namespaces.get(namespace)
+                    tmpdoc = tmpdoc + "# " + line +"\n"
+                else:
+                    tmpdoc = "# " + line +"\n"          
+                namespaces.update({namespace:tmpdoc})          
 
     file.close()
 
@@ -405,12 +472,35 @@ if __name__ == '__main__':
         f.write('Import "native\sgd.cpp"\n')
         f.write("\n")
         f.write("Import keycodes\n\n")
-        f.write(newconst)
-        f.write("\n\nExtern\n\n")
-        f.write(newcontent)
-        f.write("\n\n")
-        f.write(speciallines)
+        for nk in namespacesc.keys():
+            if nk != 'libsgd':
+                f.write('Import '+nk+'\n')
+        f.write('\n')
+        #f.write(newconst)
+        if "libsgd" in namespacescc:
+            f.write(namespacescc.get("libsgd")+'\n')
+        #f.write(newcontent)
+        #f.write("\n\n")
+        #f.write(speciallines)
+        if "libsgd" in namespacesc:
+            f.write("Extern\n\n")
+            f.write(namespacesc.get("libsgd")+'\n')
         f.close()
+
+    for nk, nv in namespaces.items():
+        if nk != 'libsgd':
+            #print (nv)
+            with open(cerberuspath+"/"+nk+".cxs", 'w', encoding="utf8") as f:
+                #f.write(nv)
+                if nk in namespacescc:
+                    f.write(namespacescc.get(nk))
+                if nk in namespacesc:
+                    f.write("\nExtern\n")
+                    f.write(namespacesc.get(nk))
+                f.close()
+
+
+
 
     # create the Cerberus X cpp file to store the special functions with string conversion and including the header file
     with open(cerberuspath+"/native/sgd.cpp", 'w', encoding="utf8") as f:
@@ -421,6 +511,10 @@ if __name__ == '__main__':
     # create the Cerberus X doc file 
     with open(cerberuspath+"/cerberusdoc/libSGD.cerberusdoc", 'w', encoding="utf8") as f:
         f.write('# Module libSGD\n\n')
+        for nk in namespaces.keys():
+            if nk != 'libsgd':
+                f.write('# Import libSGD.'+nk+'\n\n')
+        f.write('\n')
         f.write('LibSGD reference documentation\n\n')
         f.write('It is a simple game development library, created by Mark Sibly, that provides a high level, easy to use *scene graph* style API for writing games and apps.\n\n')
         f.write('The module also support loading and playing audio and will eventually include network functionality.\n\n')
@@ -445,8 +539,16 @@ if __name__ == '__main__':
         f.write('    Return 0\n')
         f.write('End\n')
         f.write('</pre>\n\n')
-        f.write(doclines)
+        #f.write(doclines)
+        f.write(namespaces.get("libsgd")+'\n')
         f.close()
+
+    for nk, nv in namespaces.items():
+        if nk != 'libsgd':
+            #print (nv)
+            with open(cerberuspath+"/cerberusdoc/"+nk+".cerberusdoc", 'w', encoding="utf8") as f:
+                f.write(nv)
+                f.close()
 
     if not args.verbose:
         print ("Converting",cerberuspath+"/native/sgd.h","done!")
