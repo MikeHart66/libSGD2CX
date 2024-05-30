@@ -1,0 +1,90 @@
+Strict
+Import libsgd
+
+Global player:Int
+Global player_rvx:Float,player_rvy:Float
+Global player_vx:Float,player_vy:Float,player_vz:Float
+
+Global camera:Int
+
+Function CreatePlayer:Void(mesh:Int)
+
+	player = sgd_CreateModel(mesh)
+	
+	camera=sgd_CreatePerspectiveCamera()
+	sgd_SetCameraNear (camera, .1)
+	sgd_SetCameraFar (camera, 1000)
+	sgd_SetEntityParent (camera,player)
+End
+
+Function PlayerWalk:Void(speed:Float)
+
+	If sgd_KeyDown(SGD_KEY_LEFT)
+		player_rvy = player_rvy + (1.5-player_rvy) * .1
+	ElseIf sgd_KeyDown(SGD_KEY_RIGHT)
+		player_rvy = player_rvy + (-1.5-player_rvy) * .1
+	Else
+		player_rvy = player_rvy * .9
+	EndIf
+	sgd_RotateEntity (player,0,player_rvy,0)
+	
+	If sgd_KeyDown(SGD_KEY_W)
+		player_vz = player_vz + (speed-player_vz) * .1
+	ElseIf sgd_KeyDown(SGD_KEY_S)
+		player_vz = player_vz + (-speed-player_vz) * .1
+	Else
+		player_vz = player_vz * .9
+	EndIf
+	
+	If sgd_KeyDown(SGD_KEY_A)
+		player_vx = player_vx + (-speed-player_vx) * .1
+	ElseIf sgd_KeyDown(SGD_KEY_D)
+		player_vx = player_vx + (speed-player_vx) * .1
+	Else
+		player_vx = player_vx * .9
+	EndIf
+	
+	sgd_MoveEntity (player,player_vx,0,player_vz)
+	
+End
+
+Function PlayerFly:Void(speed:Float)
+
+	If sgd_KeyDown(SGD_KEY_LEFT)
+		player_rvy = player_rvy + (1.5-player_rvy) * .1
+	Else If sgd_KeyDown(SGD_KEY_RIGHT)
+		player_rvy = player_rvy + (-1.5-player_rvy) * .1
+	Else
+		player_rvy = player_rvy * .9
+	EndIf
+	sgd_RotateEntity (player,0,player_rvy,0)
+	sgd_SetEntityRotation (camera,0,0,player_rvy*-15)
+	
+	If sgd_KeyDown(SGD_KEY_UP)
+		player_rvx = player_rvx + (-1.5-player_rvx) * .1
+	ElseIf sgd_KeyDown(SGD_KEY_DOWN)
+		player_rvx = player_rvx + (1.5-player_rvx) * .1
+	Else 
+		player_rvx = player_rvx * .9
+	EndIf
+	sgd_TurnEntity (player,player_rvx,0,0)
+
+	If sgd_KeyDown(SGD_KEY_W)
+		player_vz = player_vz + (speed-player_vz) * .1
+	Else If sgd_KeyDown(SGD_KEY_S)
+		player_vz = player_vz + (-speed-player_vz) * .1
+	Else
+		player_vz = player_vz * .9
+	EndIf
+	sgd_MoveEntity (player,0,0,player_vz)
+
+	If sgd_KeyDown(SGD_KEY_A)
+		player_vx = player_vx + (-speed-player_vx) * .1
+	Else If sgd_KeyDown(SGD_KEY_D)
+		player_vx = player_vx + (speed-player_vx) * .1
+	Else
+		player_vx = player_vx * .9
+	EndIf
+	sgd_MoveEntity (player,player_vx,0,0)
+
+End

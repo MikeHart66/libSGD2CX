@@ -1,0 +1,74 @@
+Strict
+Import libsgd
+Import start
+#CC_OUTPUT_NAME="Collide"
+
+Include "assets/ -ext=png;glb;ttf -out=assets/"
+
+Function Main:Int()
+
+	sgd_Init()
+	sgd_CreateWindow(1280, 720, "Cerberus X - Collide", SGD_WINDOW_FLAGS_CENTERED )
+	sgd_CreateScene()
+
+	sgd_SetSceneAmbientLightColor (1,0.9,.8,.2)
+
+	Local env := sgd_LoadTexture("sgd://envmaps/sunnysky-cube.png", SGD_TEXTURE_FORMAT_SRGBA8, 56)
+	sgd_SetSceneEnvTexture(env)
+	
+	Local skybox := sgd_CreateSkybox(env)
+
+	Local light := sgd_CreateDirectionalLight()
+	sgd_TurnEntity (light,-45,225, 0)
+
+	Local levelMesh := sgd_LoadMesh("sgd://models/ManurewaDuplex.glb")
+
+	Local sz:Float =50
+	sgd_FitMesh (levelMesh,-sz,-sz,-sz,sz,sz,sz,True)
+
+	Local levelModel := sgd_CreateModel(levelMesh)
+	Local levelCollider := sgd_CreateMeshCollider(levelModel, 0, 0)
+
+	Local playerMesh := sgd_CreateSphereMesh(1,48,24,sgd_CreatePBRMaterial())
+
+	CreatePlayer(playerMesh)
+	sgd_MoveEntity (player, 0, 2.5, -sz/2.0)
+	sgd_MoveEntity (camera, 0, .75, 0)
+
+	Local playerCollider := sgd_CreateSphereCollider(player, 1, 1)
+
+	sgd_EnableCollisions (1, 0, 2)
+
+	Local gravity :Float=  (-9.81/60.0/60.0)
+	Local vel:Float = 0
+
+	While (sgd_PollEvents() <> SGD_EVENT_MASK_CLOSE_CLICKED)
+		If sgd_KeyHit(SGD_KEY_ESCAPE) Then Exit
+
+		Local sp:Float =1.6
+		If sgd_KeyDown(SGD_KEY_LEFT_SHIFT)
+			sp = 4.6
+		Endif
+
+		PlayerWalk(sp/60.0)
+	
+
+		Local py:= sgd_EntityY(player)
+		vel = vel + gravity
+		sgd_MoveEntity(player, 0, vel, 0)
+		
+		sgd_UpdateColliders()
+		
+		vel = sgd_EntityY(player) - py
+		If vel>0 Then vel=0
+		
+		sgd_RenderScene()
+		sgd_Present()
+		
+	    sgd_Clear2D()
+	    sgd_Draw2DText("FPS: " + sgd_FPS(), 10,10)
+	    sgd_Draw2DText("Speed: " + sp, 10,30)
+		
+	Wend
+	Return 0
+End

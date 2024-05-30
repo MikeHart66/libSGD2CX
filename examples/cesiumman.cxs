@@ -1,10 +1,12 @@
 Strict
-Import libSGD
+Import libsgd
+#CC_OUTPUT_NAME="cesiumman"
 
 Function LoadScene:Int()
     Local env := sgd_LoadTexture("sgd://envmaps/sunnysky-cube.png", SGD_TEXTURE_FORMAT_SRGBA8, 56)
     sgd_SetSceneEnvTexture(env)
-    Local skybox := sgd_CreateSkybox()
+
+    Local skybox := sgd_CreateSkybox(0)
     sgd_SetSkyboxTexture(skybox, env)
     sgd_SetSkyboxRoughness(skybox, 0.3)
 
@@ -17,7 +19,7 @@ Function LoadScene:Int()
     Local material := sgd_LoadPBRMaterial("sgd://materials/PavingStones065_1K-JPG")
     Local mesh := sgd_CreateBoxMesh(-10, -1, -10, 10, 0, 10, material)
     sgd_TransformMeshTexCoords (mesh, 4,4,0,0)
-    Local ground := sgd_CreateModel()
+    Local ground := sgd_CreateModel(0)
     
     sgd_SetModelMesh (ground, mesh)
     Local model2 := sgd_LoadBonedModel("sgd://models/cesiumman.glb", True)
@@ -28,13 +30,13 @@ Function Main:Int()
     sgd_Init()
     Local atime := 0.0
 
-    sgd_CreateWindow(1280, 720, "Cesium Man", 0)
+    sgd_CreateWindow(1280, 720, "Cesium Man", SGD_WINDOW_FLAGS_CENTERED)
     sgd_CreateScene()
 
     Local model := LoadScene()
 
 
- 	While((sgd_PollEvents() & SGD_EVENT_MASK_CLOSE_CLICKED)=0)
+ 	While(sgd_PollEvents() <> SGD_EVENT_MASK_CLOSE_CLICKED)
         
         If sgd_KeyDown(263)
             sgd_TurnEntity (model,0,3,0)
@@ -47,7 +49,7 @@ Function Main:Int()
             sgd_MoveEntity (model,0,0,-0.03)
 		Endif
         atime = atime + .03
-        sgd_AnimateModel (model,0,atime,2)
+        sgd_AnimateModel (model,0,atime,2,1)
 
         sgd_RenderScene()
         sgd_Present()

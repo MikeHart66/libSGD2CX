@@ -1,15 +1,15 @@
 Strict 
 Import libSGD
+#CC_OUTPUT_NAME="helmet"
 
 Function Main:Int()
 	sgd_Init()
-	sgd_CreateWindow(1280, 720, "Cerberus X - Helmet", 0)
+	sgd_CreateWindow(1280, 720, "Cerberus X - Helmet", SGD_WINDOW_FLAGS_CENTERED)
 	sgd_CreateScene()
 	
 	Local env := sgd_LoadTexture("sgd://envmaps/sunnysky-cube.png", SGD_TEXTURE_FORMAT_SRGBA8, 56)
-	sgd_SetSceneEnvTexture (env)
-	Local skybox := sgd_CreateSkybox()
-	sgd_SetSkyboxTexture (skybox,env)
+	sgd_SetSceneEnvTexture(env)
+	Local skybox := sgd_CreateSkybox(env)
 	sgd_SetSkyboxRoughness (skybox,.3)
 
 	Local light := sgd_CreateDirectionalLight()
@@ -18,25 +18,23 @@ Function Main:Int()
 	Local material := sgd_LoadPBRMaterial("sgd://materials/Tiles019_1K-JPG")
 	Local mesh := sgd_CreateBoxMesh(-10,-3,-10,10,-2,10,material)
 	sgd_TransformMeshTexCoords (mesh,3,3,0,0)
-	Local ground := sgd_CreateModel()
-	sgd_SetModelMesh (ground,mesh)
+	Local ground := sgd_CreateModel(mesh)
 	
 	mesh = sgd_LoadMesh("sgd://models/helmet.glb")
-	Local model := sgd_CreateModel()
-	sgd_SetModelMesh (model,mesh)
+	Local model := sgd_CreateModel(mesh)
 	sgd_MoveEntity (model,0,0,3)
 
 	While (sgd_PollEvents() <> SGD_EVENT_MASK_CLOSE_CLICKED)
-	
-		If sgd_KeyDown(263)
+		If sgd_KeyHit(SGD_KEY_ESCAPE) Then Exit
+		If sgd_KeyDown(SGD_KEY_RIGHT)
 			sgd_TurnEntity (model,0,3,0)
-		Elseif sgd_KeyDown(262)
+		Elseif sgd_KeyDown(SGD_KEY_LEFT)
 			sgd_TurnEntity (model,0,-3,0)
 		Endif
 	
-		If sgd_KeyDown(264)
+		If sgd_KeyDown(SGD_KEY_DOWN)
 			sgd_TurnEntity (model,3,0,0)
-		Elseif sgd_KeyDown(265)
+		Elseif sgd_KeyDown(SGD_KEY_UP)
 			sgd_TurnEntity (model,-3,0,0)
 		Endif
 		
