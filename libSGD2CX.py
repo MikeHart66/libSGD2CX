@@ -2,7 +2,7 @@
 #  Script:       libSGD2CX.py
 #  Description:  Create a Cerberus X module for libSGD
 #  Author:       Michael Hartlef
-#  Version:      1.03
+#  Version:      1.04
 #  License:      MIT
 #  Copyright:    (c) 2024 Michael Hartlef
 # *****************************************************
@@ -393,7 +393,7 @@ if __name__ == '__main__':
                     doclines = doclines + doclines2+"\n"
                     if namespace in namespacesc:
                         tmpsrc = namespacesc.get(namespace)
-                        tmpsrc = tmpsrc + '\t' + line[0:lp] +"\n"
+                        tmpsrc = tmpsrc + '\t' + line
                     else:
                         tmpsrc = '\t' + line +"\n"
                     namespacesc.update({namespace:tmpsrc}) 
