@@ -2,7 +2,7 @@
 #  Script:       libSGD2CX.py
 #  Description:  Create a Cerberus X module for libSGD
 #  Author:       Michael Hartlef
-#  Version:      1.04
+#  Version:      1.05
 #  License:      MIT
 #  Copyright:    (c) 2024 Michael Hartlef
 # *****************************************************
@@ -309,7 +309,7 @@ if __name__ == '__main__':
             line = 'Module libSGD.'+namespace+'\n\n'
             namespaces.update({namespace:"# Module."+namespace})
             namespacesc.update({namespace:"\n"})
-            namespacescc.update({namespace:"' "+namespace+'.cxs\n'})
+            namespacescc.update({namespace:"' "+namespace+'_SGD.cxs\n'})
              
         elif line.startswith("//"):
             line = line.replace("//", "' ")
@@ -430,7 +430,7 @@ if __name__ == '__main__':
             elif line.startswith("Module"):
                 doclines = doclines + "# " + line +"\n"
                 docline2 = ""
-                namespaces.update({namespace:'\n# Module libSGD.'+namespace+'\n\n'}) 
+                namespaces.update({namespace:'\n# Module libSGD.'+namespace+'_SGD\n\n'}) 
                 #namespacesc.update({namespace:"' "+'Module libSGD.'+namespace+'\n\n'}) 
                          
             else:
@@ -474,7 +474,7 @@ if __name__ == '__main__':
         f.write("Import keycodes\n\n")
         for nk in namespacesc.keys():
             if nk != 'libsgd':
-                f.write('Import '+nk+'\n')
+                f.write('Import '+nk+'_SGD\n')
         f.write('\n')
         #f.write(newconst)
         if "libsgd" in namespacescc:
@@ -490,7 +490,7 @@ if __name__ == '__main__':
     for nk, nv in namespaces.items():
         if nk != 'libsgd':
             #print (nv)
-            with open(cerberuspath+"/"+nk+".cxs", 'w', encoding="utf8") as f:
+            with open(cerberuspath+"/"+nk+"_SGD.cxs", 'w', encoding="utf8") as f:
                 #f.write(nv)
                 if nk in namespacescc:
                     f.write(namespacescc.get(nk))
@@ -513,7 +513,7 @@ if __name__ == '__main__':
         f.write('# Module libSGD\n\n')
         for nk in namespaces.keys():
             if nk != 'libsgd':
-                f.write('# Import libSGD.'+nk+'\n\n')
+                f.write('# Import libSGD.'+nk+'_SGD\n\n')
         f.write('\n')
         f.write('LibSGD reference documentation\n\n')
         f.write('It is a simple game development library, created by Mark Sibly, that provides a high level, easy to use *scene graph* style API for writing games and apps.\n\n')
@@ -546,7 +546,7 @@ if __name__ == '__main__':
     for nk, nv in namespaces.items():
         if nk != 'libsgd':
             #print (nv)
-            with open(cerberuspath+"/cerberusdoc/"+nk+".cerberusdoc", 'w', encoding="utf8") as f:
+            with open(cerberuspath+"/cerberusdoc/"+nk+"_SGD.cerberusdoc", 'w', encoding="utf8") as f:
                 f.write(nv)
                 f.close()
 
