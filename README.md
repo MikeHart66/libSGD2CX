@@ -1,10 +1,10 @@
+### This repository is being archived. I will not work further on it as I am not using LibSGD with Cerberus X anymore.
+
 ### libSGD2CX
 
 libSGD2CX is a Python conversion script to create a Cerberus X module from the header files and libraries of the libSGD by Mark Sibly. Currently it works only under Windows.
 
 libSGD2CX is licensed under the MIT license.
-
-You can find me at https://skirmish-dev.net/forum.
 
 ### Build instuctions for Windows.
 
